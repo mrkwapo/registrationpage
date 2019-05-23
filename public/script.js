@@ -3,20 +3,19 @@ function getUserInfo() {
   const url = "/showprofile/" + input;
   axios.get(url)
     .then(response => {
-      document.getElementById("userInfo").innerHTML = response.data;
+      document.getElementById("userInfo").innerHTML = JSON.stringify(response.data);
     })
 }
 
 function handleSubmit() {
   // Getting values from user inputs
   const userName = document.getElementById("user-name").value;
-  const userId = document.getElementById("user-id").value;
+
   const message = document.getElementById("message").value;
 
   // Creating a payload object
   const payload = {
     username: userName,
-    id: userId,
     message
   }
 

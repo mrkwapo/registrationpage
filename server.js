@@ -1,7 +1,13 @@
 const express = require('express')
 const bodyParser = require('body-parser');
+const keys = require('./keys');
+const User = require('./models/User');
 const app = express()
 const port = 3000
+
+// Connecting mongoDB
+const mongoose = require('mongoose');
+mongoose.connect(keys.mongoDBUrl, { useNewUrlParser: true }).then(() => console.log("DB connected"));
 
 app.use(bodyParser.json());
 app.use('/', express.static("public"));
@@ -10,27 +16,32 @@ app.get('/', function (req, res) {
   res.send('Hello World!')
 })
 
-var data = [];
 app.post('/api', function (req, res) {
   const userName = req.body.username;
-  const userId = req.body.id;
   const message = req.body.message;
 
-  const temp = {
+  const data = {
     username: userName,
-    id: userId,
     message: message
   }
-
-  data.push(temp)
   console.log(data);
 
-  const reply = `${userName} with id of ${userId} is saying ${message}`
-  res.send(reply);
+  const user = new User(data)
+  user.save().then(() => {
+    console.log("New user created");
+    res.send(data);
+  })
+
+
 })
 
 app.get("/getallusers", function (req, res) {
-  res.send(data)
+  User
+    .find()
+    .then(results => {
+      console.log(results)
+      res.send(results)
+    })
 })
 
 
@@ -39,7 +50,15 @@ app.get("/showprofile/:username", function (req, res) {
   const user = req.params.username;
   console.log(user);
 
-  res.send("show profile working");
+  User.find({ username: user })
+    .then(result => {
+      console.log("Showing", user, "profile:", result)
+      res.send(result)
+    })
+    .catch(err => {
+      console.log(err)
+      res.send(err)
+    })
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
