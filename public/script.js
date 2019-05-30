@@ -1,10 +1,27 @@
 function getUserInfo() {
   const input = document.getElementById("userName").value;
-  const url = "/showprofile/" + input;
+  const url = "/api/showprofile/" + input;
   axios.get(url)
     .then(response => {
-      document.getElementById("userInfo").innerHTML = JSON.stringify(response.data);
+      displayUsers(response.data, "userInfo");
     })
+}
+
+function displayUsers(userData, id) {
+  const listItems = userData.map(element => {
+    return (
+      "<li>"
+      + "Name: "
+      + element.username
+      + " | "
+      + "message: "
+      + (element.message ? element.message : " " +
+        element.username + " did not leave a message.")
+      + "</li>"
+    )
+  })
+
+  document.getElementById(id).innerHTML = "<ul>" + listItems.join("\n") + "</ul>"
 }
 
 function handleSubmit() {
@@ -27,8 +44,8 @@ function handleSubmit() {
 }
 
 function getAllUsers() {
-  axios.get("/getallusers/")
+  axios.get("/api/getallusers/")
     .then(response => {
-      document.getElementById("result").innerHTML = JSON.stringify(response.data)
+      displayUsers(response.data, "result")
     })
 }
