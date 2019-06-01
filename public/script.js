@@ -3,25 +3,25 @@ function getUserInfo() {
   const url = "/api/showprofile/" + input;
   axios.get(url)
     .then(response => {
-      displayUsers(response.data, "userInfo");
+      const listItems = response.data.map(element => {
+        return (
+          "<li>"
+          + "Name: "
+          + element.username
+          + " | "
+          + "message: "
+          + (element.message ? element.message : " " +
+            element.username + " did not leave a message.")
+          + "</li>"
+        )
+      })
+
+      document.getElementById("userInfo").innerHTML = "<ul>" + listItems.join("\n") + "</ul>"
     })
 }
 
 function displayUsers(userData, id) {
-  const listItems = userData.map(element => {
-    return (
-      "<li>"
-      + "Name: "
-      + element.username
-      + " | "
-      + "message: "
-      + (element.message ? element.message : " " +
-        element.username + " did not leave a message.")
-      + "</li>"
-    )
-  })
 
-  document.getElementById(id).innerHTML = "<ul>" + listItems.join("\n") + "</ul>"
 }
 
 function handleSubmit() {
